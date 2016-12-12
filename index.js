@@ -9,7 +9,7 @@ exports.getInventory = (steamid, appid, contextid, tradableOnly, proxy) => {
 
 	return request({
 		url: 'http://steamcommunity.com/inventory/'+steamid+'/'+appid+'/'+contextid+'?l=english&count=5000',
-		proxy: proxy || undefined,
+		proxy: proxy,
 		json: true
 	}).then((res) => {
 		if (res.success && res.total_inventory_count === 0) return inventory;
