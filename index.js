@@ -4,7 +4,7 @@ let request = require('request-promise-native');
 //CEconItem from 'McKay's steam packages
 let CEconItem = require('./CEconItem.js');
 
-module.exports = (steamid, appid, contextid, tradableOnly, proxy) => {
+exports.getInventory = (steamid, appid, contextid, tradableOnly, proxy) => {
 	let inventory = [];
 
 	return request({
