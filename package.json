@@ -1,6 +1,6 @@
 {
   "name": "steam-inventory-api",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Get the Steam inventory of a user using the new Steam endpoint",
   "main": "index.js",
   "scripts": {
