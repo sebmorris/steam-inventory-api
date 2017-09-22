@@ -6,7 +6,7 @@ const CEconItem = require('./CEconItem.js');
 const rotateArray = require('./rotate-array.js');
 
 exports.getInventory = (steamid, appid, contextid, tradableOnly, proxy) => {
-  const proxyChoice = () => proxy;
+  let proxyChoice = () => proxy;
   if (typeof proxy === 'object') proxyChoice = rotateArray(proxy, 1);
 
   const makeRequest = (lastAssetId) => {
