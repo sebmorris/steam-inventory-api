@@ -89,12 +89,13 @@ const InventoryApi = module.exports = {
     if (res.success && res.total_inventory_count === 0) return parsed;
     if (!res || !res.success || !res.assets || !res.descriptions) throw 'Malformed response';
 
+    parsed.total = res.total_inventory_count;
     for (let item in res.assets) {
       const parsedItem = parseItem(res.assets[item], res.descriptions, contextid);
       if (!tradable || parsedItem.tradable) parsed.items.push(parsedItem);
+      else parsed.total--;
     }
 
-    parsed.total = res.total_inventory_count;
     return parsed;
   },
 };
