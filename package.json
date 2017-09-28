@@ -1,6 +1,6 @@
 {
   "name": "steam-inventory-api",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Get the Steam inventory of a user using the new Steam endpoint",
   "main": "dist/index.js",
   "scripts": {
@@ -19,5 +19,9 @@
   "dependencies": {
     "request": "^2.79.0",
     "request-promise-native": "^1.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1"
   }
 }

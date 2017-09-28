@@ -28,8 +28,8 @@ module.exports = (
       }
     }
     if (description) {
-      for (thing in description) {
-        if (description.hasOwnProperty(thing)) parsed[thing] = description[thing];
+      for (prop in description) {
+        if (description.hasOwnProperty(prop)) parsed[prop] = description[prop];
       }
     }
   }
