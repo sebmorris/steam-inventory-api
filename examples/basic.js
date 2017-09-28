@@ -1,12 +1,12 @@
-const InventoryApi = require('../source/index.js');
+const InventoryApi = require('../dist/index.js');
 
 const inventoryApi = Object.create(InventoryApi);
 inventoryApi.init({
   id: 'Name of inventoryApi instance',
   // Array of proxy ips
   proxy: [
-  
-  ],  
+
+  ],
   // Repeats for each proxy (default 1)
   proxyRepeat: 1,
   // Max proxy requests per specified interval (default 25)
@@ -17,7 +17,7 @@ inventoryApi.init({
 
 const contextid = 2;
 const steamid = '76561198051381875';
-const appid = 440;
+const appid = 730;
 
 inventoryApi.get({
   appid,
