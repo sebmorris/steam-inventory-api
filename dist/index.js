@@ -92,7 +92,7 @@ var InventoryApi = module.exports = {
       });
     }
 
-    makeRequest().then(function (res) {
+    return makeRequest().then(function (res) {
       // May throw 'Malformed Response'
       result = _this3.parse(res, result, contextid, tradable);
 

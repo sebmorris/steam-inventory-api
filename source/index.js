@@ -77,7 +77,7 @@ const InventoryApi = module.exports = {
       });
     }
 
-    makeRequest()
+    return makeRequest()
     .then((res) => {
       // May throw 'Malformed Response'
       result = this.parse(res, result, contextid, tradable);
