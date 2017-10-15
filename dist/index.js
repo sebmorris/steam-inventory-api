@@ -33,19 +33,21 @@ var InventoryApi = module.exports = {
   size: function size(_ref2) {
     var appid = _ref2.appid,
         contextid = _ref2.contextid,
-        steamid = _ref2.steamid;
+        steamid = _ref2.steamid,
+        retries = _ref2.retries;
 
     return this.get({
       appid: appid,
       contextid: contextid,
       steamid: steamid,
+      retries: retries,
       count: 1
     }).then(function (res) {
       return res.total;
     });
   },
   get: function get(_ref3) {
-    var _this2 = this;
+    var _this3 = this;
 
     var appid = _ref3.appid,
         contextid = _ref3.contextid,
@@ -54,6 +56,8 @@ var InventoryApi = module.exports = {
         result = _ref3.result,
         _ref3$count = _ref3.count,
         count = _ref3$count === undefined ? 5000 : _ref3$count,
+        _ref3$retries = _ref3.retries,
+        retries = _ref3$retries === undefined ? 1 : _ref3$retries,
         _ref3$language = _ref3.language,
         language = _ref3$language === undefined ? 'english' : _ref3$language,
         _ref3$tradable = _ref3.tradable,
@@ -70,13 +74,31 @@ var InventoryApi = module.exports = {
 
     this.recentRequests += 1;
     this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
-    return request(options).then(function (res) {
+
+    function makeRequest() {
+      var _this2 = this;
+
+      return request(options).catch(function (err) {
+        // TODO: Don't throw for private inventory etc.
+        if (retries > 1) {
+          options.proxy = _this2.useProxy ? _this2.proxy() : undefined;
+          _this2.recentRequests += 1;
+          _this2.recentRotations = Math.floor(_this2.recentRequests / _this2.proxyList.length);
+          retries -= 1;
+          return makeRequest();
+        } else {
+          throw err;
+        }
+      });
+    }
+
+    makeRequest().then(function (res) {
       // May throw 'Malformed Response'
-      result = _this2.parse(res, result, contextid, tradable);
+      result = _this3.parse(res, result, contextid, tradable);
 
       if (result.items.length < result.total) {
         start = result.items[result.items.length - 1].assetid;
-        return _this2.get({
+        return _this3.get({
           appid: appid,
           contextid: contextid,
           steamid: steamid,

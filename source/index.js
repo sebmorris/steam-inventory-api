@@ -26,11 +26,13 @@ const InventoryApi = module.exports = {
     appid,
     contextid,
     steamid,
+    retries,
   }) {
     return this.get({
       appid,
       contextid,
       steamid,
+      retries,
       count: 1,
     })
     .then(res => res.total);
@@ -42,6 +44,7 @@ const InventoryApi = module.exports = {
     start,
     result,
     count = 5000,
+    retries = 1,
     language = 'english',
     tradable = true,
   }) {
@@ -57,7 +60,24 @@ const InventoryApi = module.exports = {
 
     this.recentRequests += 1;
     this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
-    return request(options)
+
+    function makeRequest() {
+      return request(options)
+      .catch((err) => {
+        // TODO: Don't throw for private inventory etc.
+        if (retries > 1) {
+          options.proxy = this.useProxy ? this.proxy() : undefined;
+          this.recentRequests += 1;
+          this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
+          retries -= 1;
+          return makeRequest();
+        } else {
+          throw err;
+        }
+      });
+    }
+
+    makeRequest()
     .then((res) => {
       // May throw 'Malformed Response'
       result = this.parse(res, result, contextid, tradable);
