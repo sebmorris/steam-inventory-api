@@ -45,6 +45,7 @@ const InventoryApi = module.exports = {
     result,
     count = 5000,
     retries = 1,
+    retryDelay = 0,
     language = 'english',
     tradable = true,
   }) {
@@ -70,7 +71,8 @@ const InventoryApi = module.exports = {
           this.recentRequests += 1;
           this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
           retries -= 1;
-          return makeRequest();
+          return new Promise((resolve, reject) => setTimeout(resolve, retryDelay))
+          .then(() => makeRequest);
         } else {
           throw err;
         }

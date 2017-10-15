@@ -58,6 +58,8 @@ var InventoryApi = module.exports = {
         count = _ref3$count === undefined ? 5000 : _ref3$count,
         _ref3$retries = _ref3.retries,
         retries = _ref3$retries === undefined ? 1 : _ref3$retries,
+        _ref3$retryDelay = _ref3.retryDelay,
+        retryDelay = _ref3$retryDelay === undefined ? 0 : _ref3$retryDelay,
         _ref3$language = _ref3.language,
         language = _ref3$language === undefined ? 'english' : _ref3$language,
         _ref3$tradable = _ref3.tradable,
@@ -85,7 +87,11 @@ var InventoryApi = module.exports = {
           _this2.recentRequests += 1;
           _this2.recentRotations = Math.floor(_this2.recentRequests / _this2.proxyList.length);
           retries -= 1;
-          return makeRequest();
+          return new Promise(function (resolve, reject) {
+            return setTimeout(resolve, retryDelay);
+          }).then(function () {
+            return makeRequest;
+          });
         } else {
           throw err;
         }
