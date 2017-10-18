@@ -47,7 +47,7 @@ var InventoryApi = module.exports = {
     });
   },
   get: function get(_ref3) {
-    var _this3 = this;
+    var _this2 = this;
 
     var appid = _ref3.appid,
         contextid = _ref3.contextid,
@@ -77,16 +77,18 @@ var InventoryApi = module.exports = {
     this.recentRequests += 1;
     this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
 
-    function makeRequest() {
-      var _this2 = this;
-
+    var makeRequest = function makeRequest() {
+      console.log('Requesting. Start ' + start + ', Retries ' + retries + ', Retry Delay ' + retryDelay + ', Items ' + (result ? result.items.length : 0));
       return request(options).catch(function (err) {
         // TODO: Don't throw for private inventory etc.
+        console.log('Retry error', err);
         if (retries > 1) {
+          console.log('Retrying. Start ' + start + ', Retries ' + retries + ', Proxy ' + options.proxy + ', Items ' + (result ? result.items.length : 0));
           options.proxy = _this2.useProxy ? _this2.proxy() : undefined;
           _this2.recentRequests += 1;
           _this2.recentRotations = Math.floor(_this2.recentRequests / _this2.proxyList.length);
           retries -= 1;
+          console.log(retries + ' Retries remaining');
           return new Promise(function (resolve, reject) {
             return setTimeout(resolve, retryDelay);
           }).then(function () {
@@ -96,20 +98,24 @@ var InventoryApi = module.exports = {
           throw err;
         }
       });
-    }
+    };
 
     return makeRequest().then(function (res) {
       // May throw 'Malformed Response'
-      result = _this3.parse(res, result, contextid, tradable);
+      result = _this2.parse(res, result, contextid, tradable);
 
       if (result.items.length < result.total) {
         start = result.items[result.items.length - 1].assetid;
-        return _this3.get({
+        return _this2.get({
           appid: appid,
           contextid: contextid,
           steamid: steamid,
           start: start,
-          result: result
+          result: result,
+          retries: retries,
+          retryDelay: retryDelay,
+          language: language,
+          tradable: tradable
         });
       }
 

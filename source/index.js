@@ -51,6 +51,7 @@ const InventoryApi = module.exports = {
   }) {
     if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
 
+
     const url = `http://steamcommunity.com/inventory/${steamid}/${appid}/${contextid}` +
       `?l=${language}&count=${count}${start ? `&start_assetid=${start}` : ''}`;
     const options = {
@@ -62,15 +63,19 @@ const InventoryApi = module.exports = {
     this.recentRequests += 1;
     this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
 
-    function makeRequest() {
+    const makeRequest = () => {
+      console.log(`Requesting. Start ${start}, Retries ${retries}, Retry Delay ${retryDelay}, Items ${result ? result.items.length : 0}`);
       return request(options)
       .catch((err) => {
         // TODO: Don't throw for private inventory etc.
+        console.log('Retry error', err);
         if (retries > 1) {
+          console.log(`Retrying. Start ${start}, Retries ${retries}, Proxy ${options.proxy}, Items ${result ? result.items.length : 0}`);
           options.proxy = this.useProxy ? this.proxy() : undefined;
           this.recentRequests += 1;
           this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
           retries -= 1;
+          console.log(`${retries} Retries remaining`);
           return new Promise((resolve, reject) => setTimeout(resolve, retryDelay))
           .then(() => makeRequest);
         } else {
@@ -91,7 +96,11 @@ const InventoryApi = module.exports = {
           contextid,
           steamid,
           start,
-          result: result,
+          result,
+          retries,
+          retryDelay,
+          language,
+          tradable,
         });
       }
 
