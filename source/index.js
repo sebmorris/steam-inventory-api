@@ -66,6 +66,10 @@ const InventoryApi = module.exports = {
     const makeRequest = () => {
       console.log(`Requesting. Start ${start}, Retries ${retries}, Retry Delay ${retryDelay}, Items ${result ? result.items.length : 0}`);
       return request(options)
+      .then((res) => {
+        // May throw 'Malformed Response'
+        result = this.parse(res, result, contextid, tradable);
+      })
       .catch((err) => {
         // TODO: Don't throw for private inventory etc.
         console.log('Retry error', err);
@@ -86,9 +90,6 @@ const InventoryApi = module.exports = {
 
     return makeRequest()
     .then((res) => {
-      // May throw 'Malformed Response'
-      result = this.parse(res, result, contextid, tradable);
-
       if (result.items.length < result.total) {
         start = result.items[result.items.length - 1].assetid;
         return this.get({
