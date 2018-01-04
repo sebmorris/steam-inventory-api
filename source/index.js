@@ -48,6 +48,7 @@ const InventoryApi = module.exports = {
     retryDelay = 0,
     language = 'english',
     tradable = true,
+    retryFn = () => true,
   }) {
     if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
 
@@ -90,7 +91,10 @@ const InventoryApi = module.exports = {
 
     return makeRequest()
     .then((res) => {
-      if (result.items.length < result.total) {
+      if (
+        result.items.length < result.total &&
+        retryFn(result)
+      ) {
         start = result.items[result.items.length - 1].assetid;
         return this.get({
           appid,

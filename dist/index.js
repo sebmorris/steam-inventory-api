@@ -63,7 +63,11 @@ var InventoryApi = module.exports = {
         _ref3$language = _ref3.language,
         language = _ref3$language === undefined ? 'english' : _ref3$language,
         _ref3$tradable = _ref3.tradable,
-        tradable = _ref3$tradable === undefined ? true : _ref3$tradable;
+        tradable = _ref3$tradable === undefined ? true : _ref3$tradable,
+        _ref3$retryFn = _ref3.retryFn,
+        retryFn = _ref3$retryFn === undefined ? function () {
+      return true;
+    } : _ref3$retryFn;
 
     if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
 
@@ -104,7 +108,7 @@ var InventoryApi = module.exports = {
     };
 
     return makeRequest().then(function (res) {
-      if (result.items.length < result.total) {
+      if (result.items.length < result.total && retryFn(result)) {
         start = result.items[result.items.length - 1].assetid;
         return _this2.get({
           appid: appid,
