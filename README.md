@@ -31,6 +31,9 @@ inventoryApi.get({
   count = 5000, // Items to retrieve per request (max 5000, not much reason to change this)
   language = 'english', // Defaults english
   tradable = true, // Defaults true
+  retries = 1, // Number of retries
+  retryDelay = 0, // Delay between successive retries
+  retryFn = () => true, // Called with current res. Used to decide if more items should be requested between requests (inventories larger than 'count' only) 
 })
 ```
 Retrieves a user's inventory. Returns a promise, with res: `{ items: [/*array of CEconItems*/], total: [/*total items*/] }`.
@@ -42,6 +45,7 @@ inventoryApi.size({
   appid,
   contextid,
   steamid,
+  retries,
 })
 ```
 Retrieves number of items for a specified context. Returns a promise, with int res: ${Number Of Items}. Shorthand `get`.
