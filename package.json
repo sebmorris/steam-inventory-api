@@ -1,5 +1,5 @@
 {
-  "name": "steam-inventory-api",
+  "name": "steam-inventory-api-fork",
   "version": "2.1.0",
   "description": "Get the Steam inventory of a user using the new Steam endpoint",
   "main": "dist/index.js",
