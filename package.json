@@ -1,6 +1,6 @@
 {
   "name": "steam-inventory-api",
-  "version": "2.0.10",
+  "version": "2.1.0",
   "description": "Get the Steam inventory of a user using the new Steam endpoint",
   "main": "dist/index.js",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sebmorris/steam-inventory-api.git"
+    "url": "git+https://github.com/itsjfx/steam-inventory-api.git"
   },
-  "author": "Seb Morris (https://steamcommunity.com/id/oattty/)",
+  "author": "jfx (https://jfx.ac)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sebmorris/steam-inventory-api/issues"
+    "url": "https://github.com/itsjfx/steam-inventory-api/issues"
   },
-  "homepage": "https://github.com/sebmorris/steam-inventory-api#readme",
+  "homepage": "https://github.com/itsjfx/steam-inventory-api#readme",
   "dependencies": {
     "request": "^2.79.0",
     "request-promise-native": "^1.0.3"
