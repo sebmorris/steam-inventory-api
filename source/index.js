@@ -72,7 +72,7 @@ const InventoryApi = module.exports = {
       })
       .catch((err) => {
         // TODO: Don't throw for private inventory etc.
-        console.log('Retry error', err);
+        console.log('Retry error');
         if (retries > 1) {
           console.log(`Retrying. Start ${start}, Retries ${retries}, Proxy ${options.proxy}, Items ${result ? result.items.length : 0}`);
           options.proxy = this.useProxy ? this.proxy() : undefined;
