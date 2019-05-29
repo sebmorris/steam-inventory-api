@@ -88,10 +88,10 @@ var InventoryApi = module.exports = {
         result = _this2.parse(res, result, contextid, tradable);
       }).catch(function (err) {
         // TODO: Don't throw for private inventory etc.
-        console.log('Retry error', err);
+        console.log('Retry error, failed on proxy', options.proxy);
         if (retries > 1) {
+		  options.proxy = _this2.useProxy ? _this2.proxy() : undefined;
           console.log('Retrying. Start ' + start + ', Retries ' + retries + ', Proxy ' + options.proxy + ', Items ' + (result ? result.items.length : 0));
-          options.proxy = _this2.useProxy ? _this2.proxy() : undefined;
           _this2.recentRequests += 1;
           _this2.recentRotations = Math.floor(_this2.recentRequests / _this2.proxyList.length);
           retries -= 1;

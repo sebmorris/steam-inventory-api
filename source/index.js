@@ -72,10 +72,10 @@ const InventoryApi = module.exports = {
       })
       .catch((err) => {
         // TODO: Don't throw for private inventory etc.
-        console.log('Retry error');
+        console.log('Retry error, failed on proxy', options.proxy);
         if (retries > 1) {
+		  options.proxy = this.useProxy ? this.proxy() : undefined;
           console.log(`Retrying. Start ${start}, Retries ${retries}, Proxy ${options.proxy}, Items ${result ? result.items.length : 0}`);
-          options.proxy = this.useProxy ? this.proxy() : undefined;
           this.recentRequests += 1;
           this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
           retries -= 1;
