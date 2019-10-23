@@ -8,7 +8,8 @@ const InventoryApi = module.exports = {
     proxy,
     proxyRepeat = 1,
     maxUse = 25,
-    requestInterval = 60 * 1000,
+	requestInterval = 60 * 1000,
+	SteamApisKey = null
   }) {
     this.id = id;
     this.useProxy = !!proxy;
@@ -17,7 +18,8 @@ const InventoryApi = module.exports = {
     this.proxy = rotate(this.proxyList, proxyRepeat);
     this.maxUse = maxUse;
     this.recentRequests = 0;
-    this.recentRotations = 0;
+	this.recentRotations = 0;
+	this.SteamApisKey = SteamApisKey;
     setInterval(() => {
       this.recentRequests = this.recentRotations = 0;
     }, requestInterval)
@@ -50,11 +52,14 @@ const InventoryApi = module.exports = {
     tradable = true,
     retryFn = () => true,
   }) {
-    if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
+    //if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
 
-    const url = `http://steamcommunity.com/inventory/${steamid}/${appid}/${contextid}` +
-      `?l=${language}&count=${count}${start ? `&start_assetid=${start}` : ''}`;
-    const options = {
+	let url;
+	if (this.SteamApisKey)
+		url = `https://api.steamapis.com/steam/inventory/${steamid}/${appid}/${contextid}?api_key=${this.SteamApisKey}${start ? `&start_assetid=${start}` : ''}`;
+	else
+		url = `https://steamcommunity.com/inventory/${steamid}/${appid}/${contextid}?l=${language}&count=${count}${start ? `&start_assetid=${start}` : ''}`;
+	const options = {
       url,
       json: true,
       proxy: this.useProxy ? this.proxy() : undefined,
