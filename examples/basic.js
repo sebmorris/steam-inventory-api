@@ -13,7 +13,10 @@ inventoryApi.init({
   maxUse: 25,
   // Interval for maxUse in ms (default 1 min)
   requestInterval: 60 * 1000,
-  //SteamApisKey: "STEAM_APIS_KEY_IF_USING_STEAM_APIS" // If not using just don't include this
+  requestTimeout: 9000
+  // (default 9000 ms)
+  //SteamApisKey: "STEAM_APIS_KEY_IF_USING_STEAM_APIS"
+  // If not using just don't include this
 });
 
 const contextid = 6;

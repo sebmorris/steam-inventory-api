@@ -19,7 +19,9 @@ var InventoryApi = module.exports = {
         _ref$requestInterval = _ref.requestInterval,
         requestInterval = _ref$requestInterval === undefined ? 60 * 1000 : _ref$requestInterval,
         _ref$SteamApisKey = _ref.SteamApisKey,
-        SteamApisKey = _ref$SteamApisKey === undefined ? null : _ref$SteamApisKey;
+        SteamApisKey = _ref$SteamApisKey === undefined ? null : _ref$SteamApisKey,
+        _ref$requestTimeout = _ref.requestTimeout,
+        requestTimeout = _ref$requestTimeout === undefined ? 9000 : _ref$requestTimeout;
 
     this.id = id;
     this.useProxy = !!proxy;
@@ -29,6 +31,7 @@ var InventoryApi = module.exports = {
     this.recentRequests = 0;
     this.recentRotations = 0;
     this.SteamApisKey = SteamApisKey;
+    this.requestTimeout = requestTimeout;
     setInterval(function () {
       _this.recentRequests = _this.recentRotations = 0;
     }, requestInterval);
@@ -79,7 +82,8 @@ var InventoryApi = module.exports = {
     var options = {
       url: url,
       json: true,
-      proxy: this.useProxy ? this.proxy() : undefined
+      proxy: this.useProxy ? this.proxy() : undefined,
+      timeout: this.requestTimeout
     };
 
     this.recentRequests += 1;

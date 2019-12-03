@@ -9,7 +9,8 @@ const InventoryApi = module.exports = {
     proxyRepeat = 1,
     maxUse = 25,
 	requestInterval = 60 * 1000,
-	SteamApisKey = null
+	SteamApisKey = null,
+	requestTimeout = 9000
   }) {
     this.id = id;
     this.useProxy = !!proxy;
@@ -20,6 +21,7 @@ const InventoryApi = module.exports = {
     this.recentRequests = 0;
 	this.recentRotations = 0;
 	this.SteamApisKey = SteamApisKey;
+	this.requestTimeout = requestTimeout;
     setInterval(() => {
       this.recentRequests = this.recentRotations = 0;
     }, requestInterval)
@@ -62,7 +64,8 @@ const InventoryApi = module.exports = {
 	const options = {
       url,
       json: true,
-      proxy: this.useProxy ? this.proxy() : undefined,
+	  proxy: this.useProxy ? this.proxy() : undefined,
+	  timeout: this.requestTimeout
     };
 
     this.recentRequests += 1;
