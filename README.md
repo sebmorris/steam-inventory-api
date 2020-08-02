@@ -1,5 +1,9 @@
 # Steam inventory API
 
+## This project is now deprecated. Please use node-steam-bot-manager-ng instead.
+Please use my other repo and npm package: https://github.com/itsjfx/node-steam-inventory-api-ng  
+npm: https://www.npmjs.com/package/steam-inventory-api-ng 
+
 ### Changes in this fork
 
 1. Use of the "more_items" and "last_assetid" params from the inventory response from Steam. Some large inventories 50k+ items had issues loading without these parameters.
