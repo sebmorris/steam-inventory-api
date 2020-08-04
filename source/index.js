@@ -8,7 +8,9 @@ const InventoryApi = module.exports = {
     proxy,
     proxyRepeat = 1,
     maxUse = 25,
-    requestInterval = 60 * 1000,
+	requestInterval = 60 * 1000,
+	SteamApisKey = null,
+	requestTimeout = 9000
   }) {
     this.id = id;
     this.useProxy = !!proxy;
@@ -17,7 +19,9 @@ const InventoryApi = module.exports = {
     this.proxy = rotate(this.proxyList, proxyRepeat);
     this.maxUse = maxUse;
     this.recentRequests = 0;
-    this.recentRotations = 0;
+	this.recentRotations = 0;
+	this.SteamApisKey = SteamApisKey;
+	this.requestTimeout = requestTimeout;
     setInterval(() => {
       this.recentRequests = this.recentRotations = 0;
     }, requestInterval)
@@ -50,15 +54,18 @@ const InventoryApi = module.exports = {
     tradable = true,
     retryFn = () => true,
   }) {
-    if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
+    //if (this.recentRotations >= this.maxUse) return Promise.reject('Too many requests');
 
-
-    const url = `http://steamcommunity.com/inventory/${steamid}/${appid}/${contextid}` +
-      `?l=${language}&count=${count}${start ? `&start_assetid=${start}` : ''}`;
-    const options = {
+	let url;
+	if (this.SteamApisKey)
+		url = `https://api.steamapis.com/steam/inventory/${steamid}/${appid}/${contextid}?api_key=${this.SteamApisKey}${start ? `&start_assetid=${start}` : ''}`;
+	else
+		url = `https://steamcommunity.com/inventory/${steamid}/${appid}/${contextid}?l=${language}&count=${count}${start ? `&start_assetid=${start}` : ''}`;
+	const options = {
       url,
       json: true,
-      proxy: this.useProxy ? this.proxy() : undefined,
+	  proxy: this.useProxy ? this.proxy() : undefined,
+	  timeout: this.requestTimeout
     };
 
     this.recentRequests += 1;
@@ -73,10 +80,10 @@ const InventoryApi = module.exports = {
       })
       .catch((err) => {
         // TODO: Don't throw for private inventory etc.
-        console.log('Retry error', err);
+        console.log('Retry error, failed on proxy', options.proxy);
         if (retries > 1) {
+		  options.proxy = this.useProxy ? this.proxy() : undefined;
           console.log(`Retrying. Start ${start}, Retries ${retries}, Proxy ${options.proxy}, Items ${result ? result.items.length : 0}`);
-          options.proxy = this.useProxy ? this.proxy() : undefined;
           this.recentRequests += 1;
           this.recentRotations = Math.floor(this.recentRequests / this.proxyList.length);
           retries -= 1;
@@ -91,24 +98,21 @@ const InventoryApi = module.exports = {
 
     return makeRequest()
     .then((res) => {
-      if (
-        result.items.length < result.total &&
-        retryFn(result)
-      ) {
-        start = result.items[result.items.length - 1].assetid;
+      if (result && result.more_items && retryFn(result))
+          start = result.last_assetid;
+      if (!result || (result.more_items && retryFn(result)))
         return this.get({
-          appid,
-          contextid,
-          steamid,
-          start,
-          result,
-          retries,
-          retryDelay,
-          language,
-          tradable,
+          appid: appid,
+          contextid: contextid,
+          steamid: steamid,
+          start: start,
+          result: result,
+          count: count,
+          retries: retries,
+          retryDelay: retryDelay,
+          language: language,
+          tradable: tradable
         });
-      }
-
       return result;
     });
   },
@@ -125,6 +129,14 @@ const InventoryApi = module.exports = {
     if (res.success && res.total_inventory_count === 0) return parsed;
     if (!res || !res.success || !res.assets || !res.descriptions) throw 'Malformed response';
 
+    if (res.more_items) {
+      parsed.more_items = res.more_items;
+      parsed.last_assetid = res.last_assetid;
+    } else {
+      delete parsed.more_items;
+      delete parsed.last_assetid;
+    }
+    
     parsed.total = res.total_inventory_count;
     for (let item in res.assets) {
       const parsedItem = parseItem(res.assets[item], res.descriptions, contextid);

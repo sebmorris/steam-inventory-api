@@ -13,11 +13,15 @@ inventoryApi.init({
   maxUse: 25,
   // Interval for maxUse in ms (default 1 min)
   requestInterval: 60 * 1000,
+  requestTimeout: 9000
+  // (default 9000 ms)
+  //SteamApisKey: "STEAM_APIS_KEY_IF_USING_STEAM_APIS"
+  // If not using just don't include this
 });
 
-const contextid = 2;
-const steamid = '76561198051381875';
-const appid = 730;
+const contextid = 6;
+const steamid = '76561198318520345';
+const appid = 753;
 
 inventoryApi.get({
   appid,
@@ -28,6 +32,7 @@ inventoryApi.get({
 .then((res) => {
   console.log(`Retrieved inventory 1\n${res.total} total items`);
   // console.log(`Item market names:\n${JSON.stringify(res.items.map(item => item.market_hash_name), null, 4)}`);
+  console.log(res);
   console.log(`${inventoryApi.recentRequests} recent requests have been made`);
 })
 .catch((err) => {
